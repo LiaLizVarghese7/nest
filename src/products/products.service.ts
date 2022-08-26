@@ -10,7 +10,7 @@ export class ProductsService{
     private products: Product[]=this.loadNewData();
     insertProduct(title: string,description: string, price: number ){
         
-        
+        this.products=this.loadNewData();
         const prodId= this.products.length +1;
         const getdate= new Date();
         const date ={
@@ -24,13 +24,16 @@ export class ProductsService{
         return newProduct;
     }   
     getProducts(){
+        this.products=this.loadNewData();
         return [...this.products];
     }
     getSingleProduct(productId: number){
+        this.products=this.loadNewData();
         const product = this.findProduct(productId)[0];
         return {...product};
     }
     updateTitle(productId: number, prodTitle: string){
+        this.products=this.loadNewData();
         const [product, index] = this.findProduct(productId);
         this.products[index].title=prodTitle;
         fs.writeFileSync('src/products/data.json',JSON.stringify(this.products));
