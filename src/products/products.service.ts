@@ -7,10 +7,10 @@ const fs=require('fs');
 export class ProductsService{
     
     
-
-    private products: Product[]=[];
+    private products: Product[]=this.loadNewData();
     insertProduct(title: string,description: string, price: number ){
-        console.log(this.loadNewData());
+        
+        this.products=this.loadNewData();
         const prodId= this.products.length +1;
         const getdate= new Date();
         const date ={
@@ -21,18 +21,23 @@ export class ProductsService{
         const newProduct = new Product(prodId, date, title, description, price);
         this.products.push(newProduct);
         fs.writeFileSync('src/products/data.json',JSON.stringify(this.products));
-        return this.products;
+        return newProduct;
     }   
     getProducts(){
+        this.products=this.loadNewData();
         return [...this.products];
     }
     getSingleProduct(productId: number){
+        this.products=this.loadNewData();
         const product = this.findProduct(productId)[0];
         return {...product};
     }
     updateTitle(productId: number, prodTitle: string){
+        this.products=this.loadNewData();
         const [product, index] = this.findProduct(productId);
         this.products[index].title=prodTitle;
+        fs.writeFileSync('src/products/data.json',JSON.stringify(this.products));
+        
     }
 
     private findProduct(id:number): [Product, number]{
@@ -43,12 +48,18 @@ export class ProductsService{
         }
         return [product, productIndex];
     }
+    private loadNewData(){
+        const getdata = fs.readFileSync("src/products/data.json");
+        // console.log(getdata);
+        const dataBuffer = getdata.toString();
+        // console.log(dataBuffer);
+        try {
+            return JSON.parse(dataBuffer || '')
+        } catch (error) {
+            return [];
+        }
 
-    loadNewData(): any{
-    const getData = fs.readFileSync('src/products/data.json');
-    const dataBuffer = getData.toString();
-    const prodData = JSON.parse(dataBuffer);
-    return prodData
-    
+        
     }
+    
 }
