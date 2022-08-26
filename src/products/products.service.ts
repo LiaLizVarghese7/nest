@@ -1,14 +1,28 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Product } from "./product.model";
+
+const fs=require('fs');
+
 @Injectable()
 export class ProductsService{
-    private products: Product[] = [];
+    
+    
+
+    private products: Product[]=[];
     insertProduct(title: string,description: string, price: number ){
+        console.log(this.loadNewData());
         const prodId= this.products.length +1;
-        const newProduct = new Product(prodId, title, description, price);
+        const getdate= new Date();
+        const date ={
+            month:getdate.toLocaleString("en-US", { month: "long" }),
+            day : getdate.toLocaleString("en-US", { day: "2-digit" }),
+            year : getdate.getFullYear()
+        }
+        const newProduct = new Product(prodId, date, title, description, price);
         this.products.push(newProduct);
-        return prodId;
-    } 
+        fs.writeFileSync('src/products/data.json',JSON.stringify(this.products));
+        return this.products;
+    }   
     getProducts(){
         return [...this.products];
     }
@@ -28,5 +42,13 @@ export class ProductsService{
             throw new NotFoundException('Could not find product');
         }
         return [product, productIndex];
+    }
+
+    loadNewData(): any{
+    const getData = fs.readFileSync('src/products/data.json');
+    const dataBuffer = getData.toString();
+    const prodData = JSON.parse(dataBuffer);
+    return prodData
+    
     }
 }

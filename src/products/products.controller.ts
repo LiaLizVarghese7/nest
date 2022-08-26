@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post } from "@nestjs/common";
 import { ProductsService } from "./products.service";
+
 @Controller('products')
 export class ProductController{
     constructor(private readonly productsService: ProductsService ){}
@@ -9,8 +10,8 @@ export class ProductController{
     @Body('price') prodPrice: number
     ): any{
         const generatedId = this.productsService.insertProduct(prodTitle, prodDescription, prodPrice);
-        return {id: generatedId};
-    }
+        return generatedId;
+    } 
 
     @Get()
     getAllProducts(){
